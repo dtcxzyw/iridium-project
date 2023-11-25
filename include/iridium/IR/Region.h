@@ -14,10 +14,13 @@
 // limitations under the License.
 
 #pragma once
+#include "iridium/IR/Block.h"
+#include <list>
 
 namespace iridium {
 class Region {
 public:
 private:
+  std::list<Block> Blocks;
 };
 } // namespace iridium

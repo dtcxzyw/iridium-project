@@ -45,43 +45,19 @@ void Operator::addResult(const Type &Type, const Name &Name) {
 void Operator::addOperand(TrackedValue &Value) {
   Operands.emplace_back(std::make_unique<Operand>(*this, Value));
 }
-OutputIterator Operator::printNormal(OutputIterator It, std::string_view Name,
-                                     TypePrintMode PrintMode) const {
-  for (const auto &Res : Results) {
-    It = Res->print(It);
-    if (&Res != &Results.back()) {
-      It = fmt::format_to(It, ", ");
-    }
-  }
-  It = fmt::format_to(It, " = {} ", Name);
-  bool First = false;
-  for (const auto &Op : Operands) {
-    It = Op->print(It);
-
-    if ((PrintMode == TypePrintMode::PrintFirst && First) ||
-        PrintMode == TypePrintMode::PrintAll)
-      It = fmt::format_to(It, ":{}", Op->getType());
-
-    First = true;
-    if (&Op != &Operands.back())
-      It = fmt::format_to(It, ", ");
-  }
-
-  return It;
-}
-PoisonOperator::PoisonOperator(const Type &Type) { addResult(Type); }
-OutputIterator PoisonOperator::print(OutputIterator It) const {
-  return fmt::format_to(It, "poison {}", results().front()->getType());
-}
-MergeStateOperator::MergeStateOperator(
-    const PtrArrayRef<TrackedValue> &States) {
-  for (const auto &State : States) {
-    assert(State->getType().getTypeClass() == TypeClass::State);
-    addOperand(*State);
-  }
-}
-[[nodiscard]] OutputIterator
-MergeStateOperator::print(OutputIterator It) const {
-  return printNormal(It, "merge_state", TypePrintMode::None);
-}
+// PoisonOperator::PoisonOperator(const Type &Type) { addResult(Type); }
+// OutputIterator PoisonOperator::print(OutputIterator It) const {
+//   return fmt::format_to(It, "poison {}", results().front()->getType());
+// }
+// MergeStateOperator::MergeStateOperator(
+//     const PtrArrayRef<TrackedValue> &States) {
+//   for (const auto &State : States) {
+//     assert(State->getType().getTypeClass() == TypeClass::State);
+//     addOperand(*State);
+//   }
+// }
+// [[nodiscard]] OutputIterator
+// MergeStateOperator::print(OutputIterator It) const {
+//   return printNormal(It, "merge_state", TypePrintMode::None);
+// }
 } // namespace iridium

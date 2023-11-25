@@ -14,12 +14,17 @@
 // limitations under the License.
 
 #pragma once
-#include "iridium/IR/Type.h"
 #include <cassert>
+#include <cstdlib>
 
 namespace iridium {
 [[noreturn]] inline void unreachable() {
   assert(false && "unreachable");
   __builtin_unreachable();
+}
+#define IRIDIUM_UNUSED(X) ((void)(X))
+[[noreturn]] inline void notImplemented() {
+  assert(false && "not implemented");
+  std::abort();
 }
 } // namespace iridium

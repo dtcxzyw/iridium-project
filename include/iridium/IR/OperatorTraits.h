@@ -14,5 +14,78 @@
 // limitations under the License.
 
 #pragma once
+#include "iridium/IR/Operator.h"
+#include "iridium/IR/Value.h"
+#include "iridium/Support/OutputStream.hpp"
 
-namespace iridium {} // namespace iridium
+namespace iridium {
+template <typename... Ts>
+class OperatorImplWithTraits : public OperatorImpl, public Ts... {
+public:
+  const OperatorTrait *
+  getTrait(OperatorTraitTag TraitTag) const noexcept override {
+    return getTraitImpl<Ts...>(TraitTag);
+  }
+
+private:
+  template <typename First, typename... Args>
+  const OperatorTrait *getTraitImpl(OperatorTraitTag TraitTag) const noexcept {
+    if (First::getIdentifier() == TraitTag)
+      return static_cast<const First *>(this);
+    if constexpr (sizeof...(Args) > 0)
+      return getTraitImpl<Args...>(TraitTag);
+    return nullptr;
+  }
+};
+
+class ConstantValue;
+
+class OperatorTrait {
+public:
+  OperatorTrait() = default;
+  OperatorTrait(const OperatorTrait &) = delete;
+  OperatorTrait &operator=(const OperatorTrait &) = delete;
+  OperatorTrait(OperatorTrait &&) = delete;
+  OperatorTrait &operator=(OperatorTrait &&) = delete;
+  virtual ~OperatorTrait() = default;
+};
+
+class BinaryOperatorTrait : public OperatorTrait {
+public:
+  static OperatorTraitTag getIdentifier();
+  [[nodiscard]] virtual bool isCommutative() const noexcept = 0;
+  [[nodiscard]] virtual bool isAssociative() const noexcept = 0;
+  [[nodiscard]] virtual bool
+  matchIdentity(const ConstantValue &Value) const noexcept = 0;
+  [[nodiscard]] virtual const ConstantValue *
+  getIdentity(const Type &Type) const noexcept = 0;
+  // TODO: match inverse
+
+  [[nodiscard]] static std::unique_ptr<Operator>
+  create(const OperatorImpl &Impl, TrackedValue &LHS, TrackedValue &RHS,
+         const Name &Name);
+  [[nodiscard]] static OutputIterator printBinary(const Operator &Op,
+                                                  OutputIterator It);
+};
+
+class UnaryOperatorTrait : public OperatorTrait {
+public:
+  static OperatorTraitTag getIdentifier();
+  [[nodiscard]] static std::unique_ptr<Operator>
+  create(const OperatorImpl &Impl, TrackedValue &Val, const Name &Name);
+  [[nodiscard]] static OutputIterator printUnary(const Operator &Op,
+                                                 OutputIterator It);
+};
+
+class VectorizableOperatorTrait : public OperatorTrait {
+public:
+  static OperatorTraitTag getIdentifier();
+};
+
+class TerminatorOperatorTrait : public OperatorTrait {
+public:
+  static OperatorTraitTag getIdentifier();
+  [[nodiscard]] bool isValidTerminator(const Operator &ParentOp) const noexcept;
+};
+
+} // namespace iridium

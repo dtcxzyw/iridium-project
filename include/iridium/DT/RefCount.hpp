@@ -14,13 +14,10 @@
 // limitations under the License.
 
 #pragma once
-#include "iridium/IR/GlobalValue.h"
-#include "iridium/IR/Region.h"
+#include <cstdint>
+#include <memory>
 
 namespace iridium {
-class Function final : public GlobalValue {
-public:
-private:
-  Region Region;
-};
+class RefCountBase {};
+
 } // namespace iridium

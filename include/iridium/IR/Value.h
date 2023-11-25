@@ -31,6 +31,8 @@ public:
   [[nodiscard]] const Type &getType() const noexcept { return ValueType; }
   [[nodiscard]] virtual OutputIterator print(OutputIterator It) const = 0;
 
+  [[nodiscard]] const Value &decay() const noexcept { return *this; }
+
 private:
   const Type &ValueType;
 };
@@ -51,3 +53,6 @@ private:
 };
 
 } // namespace iridium
+template <>
+struct fmt::formatter<iridium::Value>
+    : public iridium::DefaultFormatter<iridium::Value> {};

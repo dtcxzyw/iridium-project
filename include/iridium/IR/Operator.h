@@ -20,32 +20,70 @@
 #include "iridium/Support/OutputStream.hpp"
 
 namespace iridium {
+class Operator;
+
 class Operand final : public Value, public IntrusiveListNode<Operand> {
 public:
-  Operand(class Operator &Parent, TrackedValue &Use);
+  Operand(Operator &Parent, TrackedValue &Use);
   ~Operand() override;
   void replaceWith(TrackedValue &NewUse);
-  [[nodiscard]] class Operator &getParent() const noexcept { return Parent; }
+  [[nodiscard]] Operator &getParent() const noexcept { return Parent; }
   [[nodiscard]] OutputIterator print(OutputIterator It) const override;
 
 private:
-  class Operator &Parent;
+  Operator &Parent;
   TrackedValue *ValueUse;
 };
 
 class Result final : public TrackedValue {
 public:
-  Result(class Operator &Parent, const Type &Type, const Name &Name)
+  Result(Operator &Parent, const Type &Type, const Name &Name)
       : TrackedValue(Type, Name), Parent(Parent) {}
-  [[nodiscard]] class Operator &getParent() const { return Parent; }
+  [[nodiscard]] Operator &getParent() const { return Parent; }
 
 private:
-  class Operator &Parent;
+  Operator &Parent;
 };
 
-class Operator : public IntrusiveListNode<Operator> {
+struct OperatorTraitTagStorage {};
+using OperatorTraitTag = const OperatorTraitTagStorage *;
+class OperatorTrait;
+
+class OperatorImpl {
 public:
-  Operator() = default;
+  OperatorImpl() = default;
+  OperatorImpl(const OperatorImpl &) = delete;
+  OperatorImpl &operator=(const OperatorImpl &) = delete;
+  OperatorImpl(OperatorImpl &&) = delete;
+  OperatorImpl &operator=(OperatorImpl &&) = delete;
+  virtual ~OperatorImpl() = default;
+
+  [[nodiscard]] virtual OutputIterator print(OutputIterator It) const = 0;
+  [[nodiscard]] virtual OutputIterator print(const Operator &Op,
+                                             OutputIterator It) const = 0;
+
+  template <typename Trait> [[nodiscard]] bool hasImpl() const noexcept {
+    return getTrait(Trait::getIdentifier());
+  }
+  template <typename Trait> [[nodiscard]] const Trait &impl() const noexcept {
+    auto Ptr = implIfPresent<Trait>();
+    assert(Ptr);
+    return *Ptr;
+  }
+  template <typename Trait>
+  [[nodiscard]] const Trait *implIfPresent() const noexcept {
+    return *reinterpret_cast<const Trait *>(getTrait(Trait::getIdentifier()));
+  }
+
+protected:
+  virtual const OperatorTrait *getTrait(OperatorTraitTag Tag) const noexcept {
+    return nullptr;
+  }
+};
+
+class Operator final : public IntrusiveListNode<Operator> {
+public:
+  Operator(const OperatorImpl &OpImpl) : OpImpl(OpImpl) {}
   Operator(const Operator &) = delete;
   Operator &operator=(const Operator &) = delete;
   Operator(Operator &&) = delete;
@@ -58,34 +96,37 @@ public:
   [[nodiscard]] const PtrVectorRef<Operand> &operands() const {
     return Operands;
   }
+  [[nodiscard]] const OperatorImpl &getImpl() const noexcept { return OpImpl; }
   [[nodiscard]] bool isTriviallyDead() const;
 
   void addResult(const Type &Type, const Name &Name = Name::empty());
   void addOperand(TrackedValue &Value);
 
-  [[nodiscard]] virtual OutputIterator print(OutputIterator It) const = 0;
-
-protected:
-  enum class TypePrintMode { None, PrintFirst, PrintAll };
-
-  [[nodiscard]] OutputIterator printNormal(OutputIterator It,
-                                           std::string_view Name,
-                                           TypePrintMode PrintMode) const;
+  [[nodiscard]] OutputIterator print(OutputIterator It) const;
 
 private:
+  const OperatorImpl &OpImpl;
   SmallPtrVector<Result, 2> Results;
   SmallPtrVector<Operand, 2> Operands;
+  // TODO: Op Attributes
 };
 
-class PoisonOperator final : public Operator {
-public:
-  PoisonOperator(const Type &Type);
-  [[nodiscard]] OutputIterator print(OutputIterator It) const override;
-};
+// class PoisonOperator final : public Operator {
+// public:
+//   PoisonOperator(const Type &Type);
+//   [[nodiscard]] OutputIterator print(OutputIterator It) const override;
+// };
 
-class MergeStateOperator final : public Operator {
-public:
-  MergeStateOperator(const PtrArrayRef<TrackedValue> &States);
-  [[nodiscard]] OutputIterator print(OutputIterator It) const override;
-};
+// class MergeStateOperator final : public Operator {
+// public:
+//   MergeStateOperator(const PtrArrayRef<TrackedValue> &States);
+//   [[nodiscard]] OutputIterator print(OutputIterator It) const override;
+// };
 } // namespace iridium
+
+template <>
+struct fmt::formatter<iridium::OperatorImpl>
+    : public iridium::DefaultFormatter<iridium::OperatorImpl> {};
+template <>
+struct fmt::formatter<iridium::Operator>
+    : public iridium::DefaultFormatter<iridium::Operator> {};

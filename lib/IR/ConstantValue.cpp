@@ -13,14 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#pragma once
-#include "iridium/IR/GlobalValue.h"
-#include "iridium/IR/Region.h"
+#include "iridium/IR/ConstantValue.h"
+#include "iridium/Support/Debug.hpp"
 
 namespace iridium {
-class Function final : public GlobalValue {
-public:
-private:
-  Region Region;
-};
+const ConstantValue &ConstantValue::getZero(const Type &ScalarType) {
+  IRIDIUM_UNUSED(ScalarType);
+  notImplemented();
+}
+const ConstantValue &ConstantValue::getOne(const Type &ScalarType) {
+  IRIDIUM_UNUSED(ScalarType);
+  notImplemented();
+}
+const ConstantValue &ConstantValue::getAllOnes(const Type &ScalarType) {
+  IRIDIUM_UNUSED(ScalarType);
+  notImplemented();
+}
 } // namespace iridium
