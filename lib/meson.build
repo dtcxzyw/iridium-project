@@ -1,0 +1,5 @@
+subdir('Support')
+subdir('DT')
+subdir('IR')
+subdir('Target')
+subdir('Transform')
