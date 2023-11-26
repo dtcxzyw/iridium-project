@@ -13,11 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "iridium/IR/Block.h"
-#include <fmt/format.h>
+#include "iridium/IR/Module.h"
 
-namespace iridium {
-OutputIterator Block::print(OutputIterator It) const {
-  return fmt::format_to(It, "block {}", BlockName);
-}
-} // namespace iridium
+namespace iridium {} // namespace iridium

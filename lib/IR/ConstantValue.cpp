@@ -17,15 +17,15 @@
 #include "iridium/Support/Debug.hpp"
 
 namespace iridium {
-const ConstantValue &ConstantValue::getZero(const Type &ScalarType) {
+const ConstantValue &ConstantInt::getZero(const Type &ScalarType) {
   IRIDIUM_UNUSED(ScalarType);
   notImplemented();
 }
-const ConstantValue &ConstantValue::getOne(const Type &ScalarType) {
+const ConstantValue &ConstantInt::getOne(const Type &ScalarType) {
   IRIDIUM_UNUSED(ScalarType);
   notImplemented();
 }
-const ConstantValue &ConstantValue::getAllOnes(const Type &ScalarType) {
+const ConstantValue &ConstantInt::getAllOnes(const Type &ScalarType) {
   IRIDIUM_UNUSED(ScalarType);
   notImplemented();
 }

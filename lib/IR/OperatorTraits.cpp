@@ -64,5 +64,9 @@ OperatorTraitTag TerminatorOperatorTrait::getIdentifier() {
   static const OperatorTraitTagStorage Tag;
   return &Tag;
 }
+OperatorTraitTag CondInferOperatorTrait::getIdentifier() {
+  static const OperatorTraitTagStorage Tag;
+  return &Tag;
+}
 
 } // namespace iridium

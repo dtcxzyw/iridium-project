@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#pragma once
+#include "iridium/DT/RefCount.hpp"
 #include "iridium/IR/Type.h"
 #include <llvm/ADT/APFloat.h>
 #include <llvm/ADT/APInt.h>
@@ -32,11 +34,6 @@ public:
   [[nodiscard]] virtual bool isOne() const noexcept = 0;
   [[nodiscard]] virtual bool isAllOnes() const noexcept = 0;
 
-  // TODO: use refcount
-  static const ConstantValue &getZero(const Type &ScalarType);
-  static const ConstantValue &getOne(const Type &ScalarType);
-  static const ConstantValue &getAllOnes(const Type &ScalarType);
-
   bool operator==(const ConstantValue &Other) const noexcept {
     return this == &Other;
   }
@@ -44,6 +41,10 @@ public:
 
 class ConstantInt final : public ConstantValue {
 public:
+  // TODO: use refcount
+  static const ConstantValue &getZero(const Type &ScalarType);
+  static const ConstantValue &getOne(const Type &ScalarType);
+  static const ConstantValue &getAllOnes(const Type &ScalarType);
 };
 
 class ConstantFloat final : public ConstantValue {

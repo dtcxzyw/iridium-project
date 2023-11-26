@@ -53,12 +53,16 @@ public:
 class BinaryOperatorTrait : public OperatorTrait {
 public:
   static OperatorTraitTag getIdentifier();
-  [[nodiscard]] virtual bool isCommutative() const noexcept = 0;
-  [[nodiscard]] virtual bool isAssociative() const noexcept = 0;
+  [[nodiscard]] virtual bool isCommutative() const noexcept { return false; }
+  [[nodiscard]] virtual bool isAssociative() const noexcept { return false; }
   [[nodiscard]] virtual bool
-  matchIdentity(const ConstantValue &Value) const noexcept = 0;
+  matchIdentity(const ConstantValue &Value) const noexcept {
+    return false;
+  }
   [[nodiscard]] virtual const ConstantValue *
-  getIdentity(const Type &Type) const noexcept = 0;
+  getIdentity(const Type &Type) const noexcept {
+    return nullptr;
+  }
   // TODO: match inverse
 
   [[nodiscard]] static std::unique_ptr<Operator>
@@ -85,7 +89,37 @@ public:
 class TerminatorOperatorTrait : public OperatorTrait {
 public:
   static OperatorTraitTag getIdentifier();
-  [[nodiscard]] bool isValidTerminator(const Operator &ParentOp) const noexcept;
+  [[nodiscard]] virtual bool
+  isValidTerminator(const Operator &ParentOp) const noexcept = 0;
+};
+
+class CondInferOperatorTrait : public OperatorTrait {
+public:
+  static OperatorTraitTag getIdentifier();
+};
+
+class RelationOperatorTrait : public OperatorTrait {
+public:
+  static OperatorTraitTag getIdentifier();
+  [[nodiscard]] static std::unique_ptr<Operator>
+  create(const OperatorImpl &Impl, TrackedValue &LHS, TrackedValue &RHS,
+         const Name &Name);
+  [[nodiscard]] virtual bool isReflexive() const noexcept { return false; }
+  [[nodiscard]] virtual bool isIrreflexive() const noexcept { return false; }
+  [[nodiscard]] virtual bool isSymmetric() const noexcept { return false; }
+  [[nodiscard]] virtual bool isAntisymmetric() const noexcept { return false; }
+  [[nodiscard]] virtual bool isAsymmetric() const noexcept { return false; }
+  [[nodiscard]] virtual bool isTransitive() const noexcept { return false; }
+
+  [[nodiscard]] static OutputIterator printRelation(const Operator &Op,
+                                                    OutputIterator It);
+};
+
+class MayNoReturnOperatorTrait : public OperatorTrait {
+public:
+  static OperatorTraitTag getIdentifier();
+  [[nodiscard]] virtual bool alwaysReturn() const noexcept { return false; }
+  [[nodiscard]] virtual bool alwaysNoReturn() const noexcept { return false; }
 };
 
 } // namespace iridium

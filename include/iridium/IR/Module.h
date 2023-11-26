@@ -15,10 +15,12 @@
 
 #pragma once
 #include "iridium/IR/GlobalValue.h"
+#include <list>
 
 namespace iridium {
 class Module {
 public:
 private:
+  std::list<std::unique_ptr<GlobalValue>> Globals;
 };
 } // namespace iridium

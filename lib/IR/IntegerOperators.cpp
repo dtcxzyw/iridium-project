@@ -24,7 +24,7 @@ bool AddOperator::matchIdentity(const ConstantValue &Value) const noexcept {
   return Value.isZero();
 }
 const ConstantValue *AddOperator::getIdentity(const Type &Type) const noexcept {
-  return &ConstantValue::getZero(Type);
+  return &ConstantInt::getZero(Type);
 }
 OutputIterator AddOperator::print(const Operator &Op, OutputIterator It) const {
   return printBinary(Op, It);
@@ -52,7 +52,7 @@ bool MulOperator::matchIdentity(const ConstantValue &Value) const noexcept {
   return Value.isOne();
 }
 const ConstantValue *MulOperator::getIdentity(const Type &Type) const noexcept {
-  return &ConstantValue::getOne(Type);
+  return &ConstantInt::getOne(Type);
 }
 OutputIterator MulOperator::print(const Operator &Op, OutputIterator It) const {
   return printBinary(Op, It);

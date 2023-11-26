@@ -13,11 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "iridium/IR/Block.h"
-#include <fmt/format.h>
+#include "iridium/DT/RefCount.hpp"
 
 namespace iridium {
-OutputIterator Block::print(OutputIterator It) const {
-  return fmt::format_to(It, "block {}", BlockName);
+void RefCountBase::addRef() noexcept { ++RefCount; }
+void RefCountBase::decRef() {
+  if ((--RefCount) == 0)
+    delete this;
 }
+
 } // namespace iridium

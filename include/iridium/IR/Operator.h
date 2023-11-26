@@ -75,6 +75,10 @@ public:
     return *reinterpret_cast<const Trait *>(getTrait(Trait::getIdentifier()));
   }
 
+  bool operator==(const OperatorImpl &Other) const noexcept {
+    return this == &Other;
+  }
+
 protected:
   virtual const OperatorTrait *getTrait(OperatorTraitTag Tag) const noexcept {
     return nullptr;
@@ -96,6 +100,10 @@ public:
   [[nodiscard]] const PtrVectorRef<Operand> &operands() const {
     return Operands;
   }
+  [[nodiscard]] const Operand &getOperand(uint32_t Idx) const {
+    return *Operands[Idx];
+  }
+  [[nodiscard]] Operand &getOperand(uint32_t Idx) { return *Operands[Idx]; }
   [[nodiscard]] const OperatorImpl &getImpl() const noexcept { return OpImpl; }
   [[nodiscard]] bool isTriviallyDead() const;
 

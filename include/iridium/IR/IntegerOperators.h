@@ -18,7 +18,9 @@
 #include "iridium/Support/OutputStream.hpp"
 
 namespace iridium {
-class AddOperator final : public OperatorImplWithTraits<BinaryOperatorTrait> {
+class AddOperator final
+    : public OperatorImplWithTraits<BinaryOperatorTrait,
+                                    VectorizableOperatorTrait> {
 public:
   static const AddOperator &get();
   [[nodiscard]] OutputIterator print(OutputIterator It) const override;
@@ -31,24 +33,18 @@ public:
   [[nodiscard]] OutputIterator print(const Operator &Op,
                                      OutputIterator It) const override;
 };
-class SubOperator final : public OperatorImplWithTraits<BinaryOperatorTrait> {
+class SubOperator final
+    : public OperatorImplWithTraits<BinaryOperatorTrait,
+                                    VectorizableOperatorTrait> {
 public:
   static const SubOperator &get();
   [[nodiscard]] OutputIterator print(OutputIterator It) const override;
-  [[nodiscard]] bool isCommutative() const noexcept override { return false; }
-  [[nodiscard]] bool isAssociative() const noexcept override { return false; }
-  [[nodiscard]] bool
-  matchIdentity(const ConstantValue &) const noexcept override {
-    return false;
-  }
-  [[nodiscard]] const ConstantValue *
-  getIdentity(const Type &) const noexcept override {
-    return nullptr;
-  }
   [[nodiscard]] OutputIterator print(const Operator &Op,
                                      OutputIterator It) const override;
 };
-class MulOperator final : public OperatorImplWithTraits<BinaryOperatorTrait> {
+class MulOperator final
+    : public OperatorImplWithTraits<BinaryOperatorTrait,
+                                    VectorizableOperatorTrait> {
 public:
   static const MulOperator &get();
   [[nodiscard]] OutputIterator print(OutputIterator It) const override;
@@ -61,43 +57,55 @@ public:
   [[nodiscard]] OutputIterator print(const Operator &Op,
                                      OutputIterator It) const override;
 };
-class DivOperator final : public OperatorImplWithTraits<BinaryOperatorTrait> {
+class DivOperator final
+    : public OperatorImplWithTraits<BinaryOperatorTrait,
+                                    VectorizableOperatorTrait> {
 public:
   static const DivOperator &get();
   [[nodiscard]] OutputIterator print(OutputIterator It) const override;
-  [[nodiscard]] bool isCommutative() const noexcept override { return false; }
-  [[nodiscard]] bool isAssociative() const noexcept override { return false; }
-  [[nodiscard]] bool
-  matchIdentity(const ConstantValue &) const noexcept override {
-    return false;
-  }
-  [[nodiscard]] const ConstantValue *
-  getIdentity(const Type &) const noexcept override {
-    return nullptr;
-  }
   [[nodiscard]] OutputIterator print(const Operator &Op,
                                      OutputIterator It) const override;
 };
-class RemOperator final : public OperatorImplWithTraits<BinaryOperatorTrait> {
+class RemOperator final
+    : public OperatorImplWithTraits<BinaryOperatorTrait,
+                                    VectorizableOperatorTrait> {
 public:
   static const RemOperator &get();
   [[nodiscard]] OutputIterator print(OutputIterator It) const override;
-  [[nodiscard]] bool isCommutative() const noexcept override { return false; }
-  [[nodiscard]] bool isAssociative() const noexcept override { return false; }
-  [[nodiscard]] bool
-  matchIdentity(const ConstantValue &) const noexcept override {
-    return false;
-  }
-  [[nodiscard]] const ConstantValue *
-  getIdentity(const Type &) const noexcept override {
-    return nullptr;
-  }
   [[nodiscard]] OutputIterator print(const Operator &Op,
                                      OutputIterator It) const override;
 };
-class AbsOperator final : public OperatorImplWithTraits<UnaryOperatorTrait> {
+class AbsOperator final
+    : public OperatorImplWithTraits<UnaryOperatorTrait,
+                                    VectorizableOperatorTrait> {
 public:
   static const AbsOperator &get();
+  [[nodiscard]] OutputIterator print(OutputIterator It) const override;
+  [[nodiscard]] OutputIterator print(const Operator &Op,
+                                     OutputIterator It) const override;
+};
+class MaxOperator final
+    : public OperatorImplWithTraits<BinaryOperatorTrait,
+                                    VectorizableOperatorTrait> {
+public:
+  static const MaxOperator &get();
+  [[nodiscard]] OutputIterator print(OutputIterator It) const override;
+  [[nodiscard]] OutputIterator print(const Operator &Op,
+                                     OutputIterator It) const override;
+};
+class MinOperator final
+    : public OperatorImplWithTraits<BinaryOperatorTrait,
+                                    VectorizableOperatorTrait> {
+public:
+  static const MinOperator &get();
+  [[nodiscard]] OutputIterator print(OutputIterator It) const override;
+  [[nodiscard]] OutputIterator print(const Operator &Op,
+                                     OutputIterator It) const override;
+};
+
+class ICmpOperator final
+    : public OperatorImplWithTraits<RelationOperatorTrait> {
+  static const ICmpOperator &get();
   [[nodiscard]] OutputIterator print(OutputIterator It) const override;
   [[nodiscard]] OutputIterator print(const Operator &Op,
                                      OutputIterator It) const override;
